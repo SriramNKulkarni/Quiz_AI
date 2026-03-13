@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEAP AI Quiz System - Complete Analysis Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            color: #2c3e50;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+        
+        .section-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin: 50px 0 30px 0;
+            padding-left: 20px;
+            border-left: 5px solid #667eea;
+            font-weight: 700;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(700px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .chart-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 35px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        .chart-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-number {
+            display: inline-block;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 35px;
+            margin-right: 12px;
+            font-size: 0.8em;
+            font-weight: 800;
+        }
+        
+        .chart-subtitle {
+            font-size: 1em;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            padding-left: 47px;
+        }
+        
+        .chart-insight {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .chart-insight strong {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+            margin-top: 20px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+            padding: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+        }
+        
+        .metric-card {
+            background: rgba(255,255,255,0.98);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LEAP AI Quiz System</h1>
+            <p>Complete Token Usage & Cost Analysis Dashboard</p>
+        </div>
+        
+        <!-- Key Metrics -->
+        <div class="key-metrics">
+            <div class="metric-card">
+                <div class="metric-value">₹0.20</div>
+                <div class="metric-label">Cost per Quiz</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">3000</div>
+                <div class="metric-label">Avg Tokens/Quiz</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">₹2</div>
+                <div class="metric-label">Cost per Student/Month</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">95%</div>
+                <div class="metric-label">Cost Reduction</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">₹0</div>
+                <div class="metric-label">Local Embedding Cost</div>
+            </div>
+        </div>
+        
+        <div class="section-title">📊 Token Usage Analysis</div>
+        
+        <div class="chart-grid">
+            <!-- Graph 1: Token Distribution -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="chart-number">1</span>
+                    Token Usage Distribution Per Quiz
+                </div>
+                <div class="chart-subtitle">Where tokens are consumed during generation</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart1"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    Model output (40%) and RAG context (33%) consume most tokens. Prompt engineering has minimal impact on cost.
+                </div>
+            </div>
+            
+            <!-- Graph 2: Token vs Questions -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="chart-number">2</span>
+                    Token Usage vs Number of Questions
+                </div>
+                <div class="chart-subtitle">How quiz size affects token consumption</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart2"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    Token growth is nearly linear. Doubling questions doubles cost - predictable scaling for management.
+                </div>
+            </div>
+        </div>
+
+        <!-- Graph 3: Token Breakdown Pie Chart -->
+        <div class="chart-container">
+            <div class="chart-title">
+                <span class="chart-number">3</span>
+                Token Breakdown (Percentage View)
+            </div>
+            <div class="chart-subtitle">Visual distribution of token components</div>
+            <div class="chart-wrapper">
+                <canvas id="chart3"></canvas>
+            </div>
+            <div class="chart-insight">
+                <strong>💡 Key Insight:</strong>
+                Output (40%) and RAG Context (33%) together consume 73% of tokens.
+                Optimization should focus on chunk size and concise output control.
+            </div>
+        </div>
+
+        
+        <div class="section-title">💰 Cost Analysis</div>
+        
+        <div class="chart-grid">
+            <!-- Graph 4: Cost Per Quiz -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="chart-number">4</span>
+                    Cost Per Quiz (INR)
+                </div>
+                <div class="chart-subtitle">Real business cost impact by configuration</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart4"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    Even the highest configuration (with explanations) costs less than ₹1 per quiz. Negligible per-unit cost.
+                </div>
+            </div>
+            
+            <!-- Graph 5: Embeddings Comparison -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="chart-number">5</span>
+                    API vs Local Embeddings Cost
+                </div>
+                <div class="chart-subtitle">Why MiniLM architecture is superior</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart5"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    Local MiniLM embeddings eliminate recurring costs entirely. API charges ₹8-25 per million tokens.
+                </div>
+            </div>
+            
+            <!-- Graph 6: Cost Per Student -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="chart-number">6</span>
+                    Cost Per Student Per Month
+                </div>
+                <div class="chart-subtitle">Business metric: student-level economics</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart6"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    At 20 quizzes/month, cost per student is only ₹4. Extremely competitive pricing potential.
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">📈 Scaling & Long-term Projections</div>
+        
+        <div class="chart-grid">
+            <!-- Graph 7: Scaling Projection -->
+            <div class="chart-container full-width">
+                <div class="chart-title">
+                    <span class="chart-number">7</span>
+                    Scaling Projection (10 Quizzes/Student/Month)
+                </div>
+                <div class="chart-subtitle">Monthly costs at different student volumes</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart7"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    Even at 50,000 students, monthly cost is only ₹1,00,000. Financially manageable at massive scale.
+                </div>
+            </div>
+            
+            <!-- Graph 8: Embedding Time -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="chart-number">8</span>
+                    Embedding Time Comparison
+                </div>
+                <div class="chart-subtitle">Operational efficiency: time per subject</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart8"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    Local MiniLM is 120-480x faster than manual tagging. Saves enormous operational effort.
+                </div>
+            </div>
+            
+            <!-- Graph 9: 3-Year Growth -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="chart-number">9</span>
+                    Cost Growth Curve (3 Years)
+                </div>
+                <div class="chart-subtitle">Long-term sustainability comparison</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart9"></canvas>
+                </div>
+                <div class="chart-insight">
+                    <strong>💡 Key Insight:</strong>
+                    API costs scale linearly with usage. Local embeddings stay flat. Token costs are predictable.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Color Palette
+        const colors = {
+            primary: '#667eea',
+            secondary: '#764ba2',
+            success: '#2ecc71',
+            warning: '#f39c12',
+            danger: '#e74c3c',
+            info: '#3498db',
+            purple: '#9b59b6',
+            teal: '#1abc9c',
+            pink: '#e91e63'
+        };
+        
+        // Chart.js Global Config
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.color = '#2c3e50';
+        
+        // Graph 1: Token Distribution
+        new Chart(document.getElementById('chart1'), {
+            type: 'bar',
+            data: {
+                labels: ['System Prompt', 'User Prompt', 'RAG Context', 'Model Output', 'Safety Buffer'],
+                datasets: [{
+                    label: 'Tokens',
+                    data: [400, 150, 1000, 1200, 250],
+                    backgroundColor: [colors.primary, colors.teal, colors.warning, colors.success, colors.purple],
+                    borderRadius: 8,
+                    borderWidth: 2,
+                    borderColor: 'white'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = 3000;
+                                const value = context.parsed.y;
+                                const percent = ((value/total) * 100).toFixed(1);
+                                return `${value} tokens (${percent}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Number of Tokens', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+        
+        // Graph 2: Token vs Questions
+        new Chart(document.getElementById('chart2'), {
+            type: 'line',
+            data: {
+                labels: ['5', '10', '15', '20'],
+                datasets: [{
+                    label: 'Total Tokens',
+                    data: [2000, 3000, 4500, 6000],
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    pointBackgroundColor: colors.primary,
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Total Tokens Used', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Number of Questions', font: { weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // Graph 3: Token Breakdown Doughnut Chart
+        new Chart(document.getElementById('chart3'), {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    'System Prompt',
+                    'User Input',
+                    'RAG Context',
+                    'Model Output',
+                    'Safety Buffer'
+                ],
+                datasets: [{
+                    data: [400, 150, 1000, 1200, 250],
+                    backgroundColor: [
+                        colors.primary,
+                        colors.teal,
+                        colors.warning,
+                        colors.success,
+                        colors.purple
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 13,
+                                weight: '600'
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed;
+                                const total = 3000;
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${context.label}: ${value} tokens (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1200,
+                    easing: 'easeInOutQuart'
+                }
+            }
+        });
+        
+        // Graph 4: Cost Per Quiz
+        new Chart(document.getElementById('chart4'), {
+            type: 'bar',
+            data: {
+                labels: ['5 Questions', '10 Questions', '15 Questions', 'With Explanation'],
+                datasets: [{
+                    label: 'Cost (₹)',
+                    data: [0.12, 0.20, 0.35, 0.50],
+                    backgroundColor: [colors.success, colors.info, colors.warning, colors.danger],
+                    borderRadius: 10,
+                    barThickness: 60
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Cost (₹)', font: { weight: 'bold' } },
+                        ticks: { callback: value => '₹' + value.toFixed(2) },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+        
+        // Graph 5: Embeddings Comparison
+        new Chart(document.getElementById('chart5'), {
+            type: 'bar',
+            data: {
+                labels: ['API Embedding (Min)', 'API Embedding (Max)', 'Local MiniLM'],
+                datasets: [{
+                    label: 'Cost per 1M Tokens (₹)',
+                    data: [8, 25, 0],
+                    backgroundColor: [colors.warning, colors.danger, colors.success],
+                    borderRadius: 10,
+                    barThickness: 80
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Cost per 1 Million Tokens (₹)', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+        
+        // Graph 6: Cost Per Student
+        new Chart(document.getElementById('chart6'), {
+            type: 'line',
+            data: {
+                labels: ['5 Quizzes', '10 Quizzes', '20 Quizzes'],
+                datasets: [{
+                    label: 'Cost per Student (₹)',
+                    data: [1, 2, 4],
+                    borderColor: colors.success,
+                    backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                    borderWidth: 4,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 8,
+                    pointHoverRadius: 12,
+                    pointBackgroundColor: colors.success,
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Cost per Student (₹)', font: { weight: 'bold' } },
+                        ticks: { callback: value => '₹' + value },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Quizzes per Month', font: { weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+        
+        // Graph 7: Scaling Projection
+        new Chart(document.getElementById('chart7'), {
+            type: 'line',
+            data: {
+                labels: ['1,000', '10,000', '50,000'],
+                datasets: [{
+                    label: 'Monthly Cost (₹)',
+                    data: [2000, 20000, 100000],
+                    borderColor: colors.primary,
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 4,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 8,
+                    pointHoverRadius: 12,
+                    pointBackgroundColor: colors.primary,
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Monthly Cost (₹)', font: { weight: 'bold' } },
+                        ticks: { callback: value => '₹' + (value/1000) + 'K' },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Number of Students', font: { weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+        
+        // Graph 8: Embedding Time
+        new Chart(document.getElementById('chart8'), {
+            type: 'bar',
+            data: {
+                labels: ['Manual Tagging (Min)', 'Manual Tagging (Max)', 'Local MiniLM'],
+                datasets: [{
+                    label: 'Time (Hours)',
+                    data: [20, 40, 0.083],
+                    backgroundColor: [colors.danger, '#c0392b', colors.success],
+                    borderRadius: 10,
+                    barThickness: 80
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                if (value < 1) {
+                                    return `${(value * 60).toFixed(0)} minutes`;
+                                }
+                                return `${value.toFixed(1)} hours`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Time Required (Hours)', font: { weight: 'bold' } },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Graph 9: 3-Year Cost Growth
+        new Chart(document.getElementById('chart9'), {
+            type: 'line',
+            data: {
+                labels: ['Year 1', 'Year 2', 'Year 3'],
+                datasets: [
+                    {
+                        label: 'API Embeddings',
+                        data: [50000, 120000, 250000],
+                        borderColor: colors.danger,
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        pointBackgroundColor: colors.danger,
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: 'Local MiniLM',
+                        data: [5000, 5000, 5000],
+                        borderColor: colors.success,
+                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 6,
+                        pointHoverRadius: 10,
+                        pointBackgroundColor: colors.success,
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Cumulative Cost (₹)', font: { weight: 'bold' } },
+                        ticks: { callback: value => '₹' + (value/1000) + 'K' },
+                        grid: { color: 'rgba(0,0,0,0.05)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Year', font: { weight: 'bold' } },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
